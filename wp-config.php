@@ -84,7 +84,13 @@ define( 'WP_DEBUG', false );
 /* Add any custom values between this line and the "stop editing" line. */
 
 
-
+// define( 'WP_ALLOW_MULTISITE', true );
+define( 'MULTISITE', true );
+define( 'SUBDOMAIN_INSTALL', false );
+define( 'DOMAIN_CURRENT_SITE', 'whitelabel.local' );
+define( 'PATH_CURRENT_SITE', '/wordpress/' );
+define( 'SITE_ID_CURRENT_SITE', 1 );
+define( 'BLOG_ID_CURRENT_SITE', 1 );
 /* That's all, stop editing! Happy publishing. */
 
 /** Absolute path to the WordPress directory. */
