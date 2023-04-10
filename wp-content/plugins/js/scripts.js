@@ -1,10 +1,16 @@
 
 let subscribeForm = document.getElementById('registration-form');
-subscribeForm.addEventListener('submit', subscribeMail);
+subscribeForm.addEventListener('submit', validateform);
 
-function subscribeMail(e) {
+
+function validateform(e) {
+
   e.preventDefault();
-
-  console.log('++')
+  let username = document.getElementById('new-user-name');
+  console.log(username)
+  // if (username.length < 10) {
+  //   return false;
+  // }
+  // return true;
 
 }

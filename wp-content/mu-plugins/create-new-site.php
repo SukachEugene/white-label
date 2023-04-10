@@ -196,6 +196,8 @@
 // add_action( 'admin_post_my_form', 'process_form_data' );
 // add_action( 'admin_post_nopriv_my_form', 'process_form_data' );
 
+
+
 add_action('wpcf7_before_send_mail', 'process_form_data');
 
 
@@ -209,10 +211,11 @@ function process_form_data()
   $password = $_POST['new-user-password'];
 
 
-  $admin_id = wp_create_user($username, $password, $email);
-  $user = new WP_User($admin_id);
-  $user->set_role('');
+  // $admin_id = wp_create_user($username, $password, $email);
+  // $user = new WP_User($admin_id);
+  // $user->set_role('');
 
+  $new_site = null;
 
   if (is_multisite()) {
     $network_domain = get_network()->domain;
@@ -223,9 +226,26 @@ function process_form_data()
       'network_id' => get_current_network_id(),
       'title'      => $site_title,
       'slug'       => $site_slug,
-      'user_id'    => $admin_id,
+      // 'user_id'    => $admin_id,
     ));
   }
+
+  $new_user = null;
+
+  if ($new_site) {
+    // $old_blog_id = get_current_blog_id();
+    switch_to_blog($new_site);
+    $new_user_id = wp_create_user($username, $password, $email);
+    // $new_user = new WP_User($new_user_id);
+    // $new_user->set_role('administrator');
+    // switch_to_blog($old_blog_id);
+    $new_user = get_user_by('id', $new_user_id);
+    $new_user->set_role('administrator');
+    wp_insert_user($new_user);
+    restore_current_blog();
+  }
+
+
 }
 
 
