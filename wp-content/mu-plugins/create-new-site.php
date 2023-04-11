@@ -196,6 +196,106 @@
 // add_action( 'admin_post_my_form', 'process_form_data' );
 // add_action( 'admin_post_nopriv_my_form', 'process_form_data' );
 
+// add_action('wpcf7_validate_text*', 'validate_form');
+
+
+// function validate_form() {
+
+// }
+
+// add_filter( 'wpcf7_validate_email*', 'custom_email_confirmation_validation_filter', 20, 2 );
+
+// function custom_email_confirmation_validation_filter( $result, $tag ) {
+//   if ( 'new-user-email-confirm' == $tag->name ) {
+//     $your_email = isset( $_POST['new-user-email'] ) ? trim( $_POST['new-user-email'] ) : '';
+//     $your_email_confirm = isset( $_POST['new-user-email-confirm'] ) ? trim( $_POST['new-user-email-confirm'] ) : '';
+
+//     if ( $your_email != $your_email_confirm ) {
+//       $result->invalidate( $tag, "Are you sure this is the correct address?" );
+//     }
+//   }
+
+//   return $result;
+// }
+
+
+
+
+// function custom_text_validation( $result, $tag ) {
+//   $name = $tag['name'];
+
+//   if ( isset( $_POST[$name] ) ) {
+//       $value = trim( wp_unslash( strtr( (string) $_POST[$name], "\n", " " ) ) );
+
+//       if ( strlen( $value ) < 10 ) {
+//         wpcf7_add_validation_error( $tag, 'Мінімальна кількість символів - 10' );
+//     }
+
+//     if ( strlen( $value ) > 100 ) {
+//         wpcf7_add_validation_error( $tag, 'Максимальна кількість символів - 100' );
+//     }
+//   }
+
+//   return $result;
+// }
+
+
+// function wpcf7_add_validation_error( $tag, $message ) {
+//   if ( ! is_object( $tag ) ) {
+//       return;
+//   }
+
+//   $tag->set_validation_error( $message );
+// }
+
+add_filter('wpcf7_validate_text*', 'custom_username_validation', 20, 2);
+add_filter('wpcf7_validate_text', 'custom_username_validation', 20, 2);
+
+function custom_username_validation($result, $tag)
+{
+  // $tag = new WPCF7_FormTag( $tag );
+  // $name = $tag->name;
+  // $value = isset( $_POST[$name] ) ? trim( $_POST[$name] ) : '';
+
+  // if ( strlen( $value ) < 4 ) {
+  //     $result->invalidate( $tag, 'Ім\'я користувача повинно містити принаймні 4 символи' );
+  // }
+
+  // return $result;
+
+  $tag = new WPCF7_FormTag( $tag );
+
+  if ('new-user-name' === $tag['name']) {
+
+    $name = $tag->name;
+    $value = isset($_POST[$name]) ? trim($_POST[$name]) : '';
+
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'users';
+    $username_exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE user_login = %s", $value ) );
+
+    if ( $username_exists > 0 ) {
+        $result->invalidate( $tag, 'This username is already taken. Please choose another username' );
+    }
+
+    if (strlen($value) < 4) {
+      $result->invalidate($tag, 'Username must contain at least 4 characters');
+    }
+
+    if (strlen($value) > 50) {
+      $result->invalidate($tag, 'Username must contain 50 or less characters');
+    }
+
+    if ($value !== strtolower($value)) {
+      $result->invalidate($tag, 'Username must be written in lower case');
+    }
+ 
+  }
+
+  return $result;
+}
+
 
 
 add_action('wpcf7_before_send_mail', 'process_form_data');
@@ -211,10 +311,6 @@ function process_form_data()
   $password = $_POST['new-user-password'];
 
 
-  // $admin_id = wp_create_user($username, $password, $email);
-  // $user = new WP_User($admin_id);
-  // $user->set_role('');
-
   $new_site = null;
 
   if (is_multisite()) {
@@ -226,26 +322,23 @@ function process_form_data()
       'network_id' => get_current_network_id(),
       'title'      => $site_title,
       'slug'       => $site_slug,
-      // 'user_id'    => $admin_id,
     ));
   }
 
   $new_user = null;
 
   if ($new_site) {
-    // $old_blog_id = get_current_blog_id();
+
     switch_to_blog($new_site);
+
     $new_user_id = wp_create_user($username, $password, $email);
-    // $new_user = new WP_User($new_user_id);
-    // $new_user->set_role('administrator');
-    // switch_to_blog($old_blog_id);
     $new_user = get_user_by('id', $new_user_id);
     $new_user->set_role('administrator');
+
     wp_insert_user($new_user);
+
     restore_current_blog();
   }
-
-
 }
 
 
