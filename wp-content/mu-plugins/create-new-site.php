@@ -248,53 +248,209 @@
 //   $tag->set_validation_error( $message );
 // }
 
+
+
+
+
+
+
+
+// add_filter('wpcf7_validate_text*', 'custom_username_validation', 20, 2);
+
+// function custom_username_validation($result, $tag)
+// {
+
+//   $tag = new WPCF7_FormTag( $tag );
+
+//   if ('new-user-name' === $tag['name']) {
+
+//     $name = $tag->name;
+//     $value = isset($_POST[$name]) ? trim($_POST[$name]) : '';
+//     $error_messages = array();
+
+//     if (strlen($value) < 4) {
+//       $error_messages[] = 'Username must contain at least 4 characters';
+//     }
+
+//     if (strlen($value) > 50) {
+//       $error_messages[] = 'Username must contain 50 or less characters';
+//     }
+
+//     if (!preg_match('/^[a-z]+$/', $value)) {
+//       $error_messages[] = 'Username must contain only lowercase letters (a-z)';
+//     }
+
+//     global $wpdb;
+
+//     $table_name = $wpdb->prefix . 'users';
+//     $username_exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE user_login = %s", $value ) );
+
+//     if ( $username_exists > 0 ) {
+//         $error_messages[] = 'This username is already taken. Please choose another username';
+//     }
+
+//     if (!empty($error_messages)) {
+//         $error_message = implode(' | ', $error_messages);
+//         $result->invalidate( $tag, $error_message );
+//     }
+
+//   }
+
+//   return $result;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 add_filter('wpcf7_validate_text*', 'custom_username_validation', 20, 2);
-add_filter('wpcf7_validate_text', 'custom_username_validation', 20, 2);
+add_filter('wpcf7_validate_text*', 'custom_slug_validation', 20, 2);
+add_filter('wpcf7_validate_email*', 'custom_email_validation', 20, 2);
+add_filter('wpcf7_validate_password*', 'custom_password_validation', 20, 2);
+
+function custom_password_validation ($result, $tag)
+{
+  $tag = new WPCF7_FormTag($tag);
+
+  if ('new-user-password-confirm' === $tag['name']) {
+    $confirm_pass = $tag->name;
+    $confirm_pass_value = isset($_POST[$confirm_pass]) ? trim($_POST[$confirm_pass]) : '';
+    $original_pass_value = isset($_POST['new-user-password']) ? trim($_POST['new-user-password']) : '';
+
+    if ( $confirm_pass_value != $original_pass_value ) {
+      $result->invalidate( $tag, "The confirm password is different" );
+    }
+  }
+  
+  return $result;
+
+
+}
+
+
+function custom_email_validation($result, $tag)
+{
+  $tag = new WPCF7_FormTag($tag);
+
+  if ('new-user-email' === $tag['name']) {
+
+    $email = $tag->name;
+    $value = isset($_POST[$email]) ? trim($_POST[$email]) : '';
+
+
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'users';
+    $username_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_name WHERE user_email = %s", $value));
+
+    if ($username_exists > 0) {
+      $result->invalidate($tag, 'This email is already registered. Please choose another email');
+      return $result;
+    }
+
+  }
+
+  return $result;
+}
+
+function custom_slug_validation($result, $tag)
+{
+
+  if ('new-site-slug' === $tag['name']) {
+
+    $slug = $tag->name;
+    $value = isset($_POST[$slug]) ? trim($_POST[$slug]) : '';
+
+
+    if (!preg_match('/^[a-z0-9]+$/', $value)) {
+      $result->invalidate($tag, 'Slug must contain only lowercase letters (a-z) and numbers (0-9)');
+      return $result;
+    }
+
+    if (strlen($value) < 4) {
+      $result->invalidate($tag, 'Slug must contain at least 4 characters');
+      return $result;
+    }
+
+    if (strlen($value) > 50) {
+      $result->invalidate($tag, 'Slug must contain 50 or less characters');
+      return $result;
+    }
+
+
+    $sites = get_sites(array('network_id' => 1));
+
+    foreach ($sites as $site) {
+      $site_details = get_blog_details($site->blog_id);
+      if ($site_details->path === '/wordpress/' . $value . '/') {
+        $result->invalidate($tag, 'This slug is already taken. Please choose another site slug');
+        return $result;
+      }
+    }
+  }
+
+  return $result;
+}
+
 
 function custom_username_validation($result, $tag)
 {
-  // $tag = new WPCF7_FormTag( $tag );
-  // $name = $tag->name;
-  // $value = isset( $_POST[$name] ) ? trim( $_POST[$name] ) : '';
-
-  // if ( strlen( $value ) < 4 ) {
-  //     $result->invalidate( $tag, 'Ім\'я користувача повинно містити принаймні 4 символи' );
-  // }
-
-  // return $result;
-
-  $tag = new WPCF7_FormTag( $tag );
+  
+  $tag = new WPCF7_FormTag($tag);
 
   if ('new-user-name' === $tag['name']) {
 
     $name = $tag->name;
     $value = isset($_POST[$name]) ? trim($_POST[$name]) : '';
 
-    global $wpdb;
 
-    $table_name = $wpdb->prefix . 'users';
-    $username_exists = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE user_login = %s", $value ) );
-
-    if ( $username_exists > 0 ) {
-        $result->invalidate( $tag, 'This username is already taken. Please choose another username' );
+    if (!preg_match('/^[a-z]+$/', $value)) {
+      $result->invalidate($tag, 'Username must contain only lowercase letters (a-z)');
+      return $result;
     }
 
     if (strlen($value) < 4) {
       $result->invalidate($tag, 'Username must contain at least 4 characters');
+      return $result;
     }
 
     if (strlen($value) > 50) {
       $result->invalidate($tag, 'Username must contain 50 or less characters');
+      return $result;
     }
 
-    if ($value !== strtolower($value)) {
-      $result->invalidate($tag, 'Username must be written in lower case');
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'users';
+    $username_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_name WHERE user_login = %s", $value));
+
+    if ($username_exists > 0) {
+      $result->invalidate($tag, 'This username is already taken. Please choose another username');
+      return $result;
     }
- 
+
   }
 
   return $result;
 }
+
+
+
+
 
 
 
@@ -337,8 +493,27 @@ function process_form_data()
 
     wp_insert_user($new_user);
 
+    switch_theme('estore-child');
+      // switch_theme('neve');
+
     restore_current_blog();
+
+    // wp_redirect(get_admin_url($new_site, 'wp-admin/'));
+    // exit;
   }
+
+
+
+
+}
+
+add_action( 'wpcf7_mail_sent', 'redirect_on_mail_sent' );
+
+function redirect_on_mail_sent() {
+
+        wp_redirect( 'http://your-site.com/your-new-site/wp-admin/', 302 );
+        exit;
+    
 }
 
 
