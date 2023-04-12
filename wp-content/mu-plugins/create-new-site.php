@@ -322,7 +322,7 @@ add_filter('wpcf7_validate_text*', 'custom_slug_validation', 20, 2);
 add_filter('wpcf7_validate_email*', 'custom_email_validation', 20, 2);
 add_filter('wpcf7_validate_password*', 'custom_password_validation', 20, 2);
 
-function custom_password_validation ($result, $tag)
+function custom_password_validation($result, $tag)
 {
   $tag = new WPCF7_FormTag($tag);
 
@@ -331,14 +331,12 @@ function custom_password_validation ($result, $tag)
     $confirm_pass_value = isset($_POST[$confirm_pass]) ? trim($_POST[$confirm_pass]) : '';
     $original_pass_value = isset($_POST['new-user-password']) ? trim($_POST['new-user-password']) : '';
 
-    if ( $confirm_pass_value != $original_pass_value ) {
-      $result->invalidate( $tag, "The confirm password is different" );
+    if ($confirm_pass_value != $original_pass_value) {
+      $result->invalidate($tag, "The confirm password is different");
     }
   }
-  
+
   return $result;
-
-
 }
 
 
@@ -361,7 +359,6 @@ function custom_email_validation($result, $tag)
       $result->invalidate($tag, 'This email is already registered. Please choose another email');
       return $result;
     }
-
   }
 
   return $result;
@@ -376,8 +373,8 @@ function custom_slug_validation($result, $tag)
     $value = isset($_POST[$slug]) ? trim($_POST[$slug]) : '';
 
 
-    if (!preg_match('/^[a-z0-9]+$/', $value)) {
-      $result->invalidate($tag, 'Slug must contain only lowercase letters (a-z) and numbers (0-9)');
+    if (!preg_match('/^[a-z0-9\-]+$/', $value)) {
+      $result->invalidate($tag, 'Slug must contain only lowercase letters (a-z), numbers (0-1), and hyphens');
       return $result;
     }
 
@@ -409,7 +406,7 @@ function custom_slug_validation($result, $tag)
 
 function custom_username_validation($result, $tag)
 {
-  
+
   $tag = new WPCF7_FormTag($tag);
 
   if ('new-user-name' === $tag['name']) {
@@ -418,7 +415,7 @@ function custom_username_validation($result, $tag)
     $value = isset($_POST[$name]) ? trim($_POST[$name]) : '';
 
 
-    if (!preg_match('/^[a-z]+$/', $value)) {
+    if (!preg_match('/^[a-z\s]+$/', $value)) {
       $result->invalidate($tag, 'Username must contain only lowercase letters (a-z)');
       return $result;
     }
@@ -442,7 +439,6 @@ function custom_username_validation($result, $tag)
       $result->invalidate($tag, 'This username is already taken. Please choose another username');
       return $result;
     }
-
   }
 
   return $result;
@@ -451,7 +447,8 @@ function custom_username_validation($result, $tag)
 
 
 
-
+// $new_site_url = '';
+// $example = 'start';
 
 
 add_action('wpcf7_before_send_mail', 'process_form_data');
@@ -491,30 +488,109 @@ function process_form_data()
     $new_user = get_user_by('id', $new_user_id);
     $new_user->set_role('administrator');
 
+
+    $user_data = array(
+      'user_login'    => $username,
+      'user_password' => $password,
+      'remember'      => true
+    );
+    $user_signon = wp_signon($user_data, false);
+
     wp_insert_user($new_user);
 
     switch_theme('estore-child');
-      // switch_theme('neve');
+    // switch_theme('neve');
 
     restore_current_blog();
 
+    // $url = get_admin_url($new_site);
+
+    // global $new_site_url; 
+
+    // $new_site_url = 'url';
+
+    // $GLOBALS['new_site_url'] = 'url1';
+    // $myThemeParams['newSiteUrl'] =  $GLOBALS['new_site_url'];
+
+
+    // global $example;
+    // $example = 'finish';
+    // $myThemeParams['example'] = $example;
+
+
+
     // wp_redirect(get_admin_url($new_site, 'wp-admin/'));
     // exit;
+
+    // wp_redirect('http://whitelabel.local/wordpress/shop/');
+    // exit;
+
+    // wp_redirect( 'http://your-site.com/your-new-site/wp-admin/', 302 );
+    // exit;
+
+    // $url = get_admin_url($new_site);
+    //  wp_send_json_success(array('url' => $url));
+
+    // wp_redirect(get_admin_url($new_site));
+    // die();
+
+    // wp_redirect($url);
+    // exit;
+
+    // $response = array(
+    //   'redirect_url' => get_admin_url($new_site)
+    // );
+
+    // $response_json = json_encode($response);
+    // wp_die($response_json);
+
+    // ob_clean();
+    // wp_redirect(get_site_url($new_site));
+    // exit;   
+
+    // $response = array('redirect' => get_site_url($new_site));
+    // wp_send_json_success($response);
+    // exit;
+
+
+    // global $myThemeParams;
+
+    // $myThemeParams['newSiteUrl'] = $url;
+    // $myThemeParams['test'] = 'test2';
+
+
+    // wp_enqueue_script( 'scripts', plugins_url() . '/js/scripts.js' );
+    // wp_add_inline_script( 'scripts', 'let myThemeParams = ' . wp_json_encode( $myThemeParams ), 'before' );
+
+
+
+
   }
-
-
-
-
 }
 
-add_action( 'wpcf7_mail_sent', 'redirect_on_mail_sent' );
+// $myThemeParams = array(
+//   'newSiteUrl' => 'original_url',
+//   'test' => 'test1',
+// );
 
-function redirect_on_mail_sent() {
 
-        wp_redirect( 'http://your-site.com/your-new-site/wp-admin/', 302 );
-        exit;
-    
-}
+// wp_enqueue_script( 'scripts', plugins_url() . '/js/scripts.js' );
+// wp_add_inline_script( 'scripts', 'let myThemeParams = ' . wp_json_encode( $myThemeParams ), 'before' );
+
+
+
+// add_action( 'wpcf7_mail_sent', 'redirect_on_mail_sent' );
+
+// function redirect_on_mail_sent() {
+
+//         global $new_site_url;
+
+//         wp_redirect( $new_site_url);
+//         exit;
+
+// }
+
+
 
 
 
