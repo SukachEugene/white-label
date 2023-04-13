@@ -1,0 +1,12 @@
+/*
+Theme Name: eStore Child 1
+Template: estore
+Theme URI: https://whitelabel.com/wordpress/themes/estore-child-1/
+*/
+
+/* Add Parent Theme Stylesheet */
+@import url('../estore/style.css');
+
+body {
+    background-color: red;
+}

@@ -1,0 +1,18 @@
+2023-04-12T15:02:08+00:00 CRITICAL Uncaught Error: Call to undefined function dd_action() in C:\xampp\htdocs\WhiteLabel\wordpress\wp-content\themes\neve\functions.php:170
+Stack trace:
+#0 C:\xampp\htdocs\WhiteLabel\wordpress\wp-settings.php(591): include()
+#1 C:\xampp\htdocs\WhiteLabel\wordpress\wp-config.php(105): require_once('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\WhiteLabel\wordpress\wp-load.php(50): require_once('C:\\xampp\\htdocs...')
+#3 C:\xampp\htdocs\WhiteLabel\wordpress\wp-admin\admin-ajax.php(22): require_once('C:\\xampp\\htdocs...')
+#4 {main}
+  thrown in C:\xampp\htdocs\WhiteLabel\wordpress\wp-content\themes\neve\functions.php on line 170
+
+2023-04-12T15:02:11+00:00 CRITICAL Uncaught Error: Call to undefined function dd_action() in C:\xampp\htdocs\WhiteLabel\wordpress\wp-content\themes\neve\functions.php:170
+Stack trace:
+#0 C:\xampp\htdocs\WhiteLabel\wordpress\wp-settings.php(591): include()
+#1 C:\xampp\htdocs\WhiteLabel\wordpress\wp-config.php(105): require_once('C:\\xampp\\htdocs...')
+#2 C:\xampp\htdocs\WhiteLabel\wordpress\wp-load.php(50): require_once('C:\\xampp\\htdocs...')
+#3 C:\xampp\htdocs\WhiteLabel\wordpress\wp-admin\admin-ajax.php(22): require_once('C:\\xampp\\htdocs...')
+#4 {main}
+  thrown in C:\xampp\htdocs\WhiteLabel\wordpress\wp-content\themes\neve\functions.php on line 170
+

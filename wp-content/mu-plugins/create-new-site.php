@@ -462,6 +462,7 @@ function process_form_data()
   $username = $_POST['new-user-name'];
   $email = $_POST['new-user-email'];
   $password = $_POST['new-user-password'];
+  $theme = $_POST['new-site-theme'];
 
 
   $new_site = null;
@@ -498,99 +499,20 @@ function process_form_data()
 
     wp_insert_user($new_user);
 
-    switch_theme('estore-child');
-    // switch_theme('neve');
+    if ($theme == 'Theme 1') {
+    switch_theme('estore-child-1');
+    } else if ($theme == 'Theme 2') {
+      switch_theme('estore-child-2');
+    } else if ($theme == 'Theme 3') {
+      switch_theme('estore-child-3');
+    } else {
+      switch_theme('neve');
+    }
+
 
     restore_current_blog();
-
-    // $url = get_admin_url($new_site);
-
-    // global $new_site_url; 
-
-    // $new_site_url = 'url';
-
-    // $GLOBALS['new_site_url'] = 'url1';
-    // $myThemeParams['newSiteUrl'] =  $GLOBALS['new_site_url'];
-
-
-    // global $example;
-    // $example = 'finish';
-    // $myThemeParams['example'] = $example;
-
-
-
-    // wp_redirect(get_admin_url($new_site, 'wp-admin/'));
-    // exit;
-
-    // wp_redirect('http://whitelabel.local/wordpress/shop/');
-    // exit;
-
-    // wp_redirect( 'http://your-site.com/your-new-site/wp-admin/', 302 );
-    // exit;
-
-    // $url = get_admin_url($new_site);
-    //  wp_send_json_success(array('url' => $url));
-
-    // wp_redirect(get_admin_url($new_site));
-    // die();
-
-    // wp_redirect($url);
-    // exit;
-
-    // $response = array(
-    //   'redirect_url' => get_admin_url($new_site)
-    // );
-
-    // $response_json = json_encode($response);
-    // wp_die($response_json);
-
-    // ob_clean();
-    // wp_redirect(get_site_url($new_site));
-    // exit;   
-
-    // $response = array('redirect' => get_site_url($new_site));
-    // wp_send_json_success($response);
-    // exit;
-
-
-    // global $myThemeParams;
-
-    // $myThemeParams['newSiteUrl'] = $url;
-    // $myThemeParams['test'] = 'test2';
-
-
-    // wp_enqueue_script( 'scripts', plugins_url() . '/js/scripts.js' );
-    // wp_add_inline_script( 'scripts', 'let myThemeParams = ' . wp_json_encode( $myThemeParams ), 'before' );
-
-
-
-
   }
 }
-
-// $myThemeParams = array(
-//   'newSiteUrl' => 'original_url',
-//   'test' => 'test1',
-// );
-
-
-// wp_enqueue_script( 'scripts', plugins_url() . '/js/scripts.js' );
-// wp_add_inline_script( 'scripts', 'let myThemeParams = ' . wp_json_encode( $myThemeParams ), 'before' );
-
-
-
-// add_action( 'wpcf7_mail_sent', 'redirect_on_mail_sent' );
-
-// function redirect_on_mail_sent() {
-
-//         global $new_site_url;
-
-//         wp_redirect( $new_site_url);
-//         exit;
-
-// }
-
-
 
 
 

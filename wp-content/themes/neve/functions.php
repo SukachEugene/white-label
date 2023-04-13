@@ -151,3 +151,27 @@ if ( neve_is_new_widget_editor() ) {
 }
 
 require_once get_template_directory() . '/header-footer-grid/loader.php';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+add_action('wp_enqueue_scripts', 'my_theme_enqueue_files');
+
+function my_theme_enqueue_files()
+{
+
+  wp_enqueue_style('style-custom', get_template_directory_uri() . '/style-custom.css');
+
+}
